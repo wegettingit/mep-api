@@ -1,19 +1,11 @@
-// 🔐 Secure Register Route
-app.post('/register', async (req, res) => {
-  const { username, password } = req.body;
+// models/User.js
 
-  try {
-    const existingUser = await User.findOne({ username });
-    if (existingUser) {
-      return res.status(409).json({ message: 'Username already exists' });
-    }
+const mongoose = require('mongoose');
 
-    const newUser = new User({ username, password }); // bcrypt will hash automatically
-    await newUser.save();
-
-    res.status(201).json({ message: 'User registered successfully' });
-  } catch (err) {
-    console.error('❌ Error during registration:', err);
-    res.status(500).json({ message: 'Server error during registration' });
-  }
+const UserSchema = new mongoose.Schema({
+  username: String,
+  password: String,
+  role: { type: String, default: 'user' }
 });
+
+module.exports = mongoose.model('User', UserSchema);
