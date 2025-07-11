@@ -1,3 +1,4 @@
+// Updated server.js with full admin and role-based permissions
 require('dotenv').config({ path: '/etc/secrets/.env' });
 const express = require('express');
 const mongoose = require('mongoose');
@@ -24,6 +25,14 @@ function authenticateToken(req, res, next) {
     req.user = user;
     next();
   });
+}
+
+// 👮 Admin Middleware
+function requireAdmin(req, res, next) {
+  if (req.user.username !== 'JohnE') {
+    return res.status(403).json({ message: 'Access denied: Admins only' });
+  }
+  next();
 }
 
 // 🔌 MongoDB Connection
@@ -54,6 +63,7 @@ const CleaningTaskSchema = new mongoose.Schema({
 }, { timestamps: true });
 const CleaningTask = mongoose.model('CleaningTask', CleaningTaskSchema);
 
+// 📝 Secure Register Route
 app.post('/register', async (req, res) => {
   const { username, password, accessKey } = req.body;
 
@@ -68,7 +78,8 @@ app.post('/register', async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ username, password: hashedPassword });
+    const role = username === 'admin' ? 'admin' : 'user';
+    const newUser = new User({ username, password: hashedPassword, role });
     await newUser.save();
 
     res.status(201).json({ message: 'User created successfully' });
@@ -76,7 +87,6 @@ app.post('/register', async (req, res) => {
     res.status(500).json({ message: 'Server error during registration' });
   }
 });
-
 
 // 🔐 Secure Login Route
 app.post('/login', async (req, res) => {
@@ -88,7 +98,7 @@ app.post('/login', async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user._id, username: user.username },
+      { id: user._id, username: user.username, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
@@ -100,7 +110,7 @@ app.post('/login', async (req, res) => {
 });
 
 // 📋 Recipe Routes
-app.post('/recipes', authenticateToken, async (req, res) => {
+app.post('/recipes', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { name, steps, station } = req.body;
     if (!name || !steps || !station) {
@@ -123,7 +133,7 @@ app.get('/recipes', authenticateToken, async (req, res) => {
   }
 });
 
-app.delete('/recipes/:id', authenticateToken, async (req, res) => {
+app.delete('/recipes/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const deleted = await Recipe.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).json({ message: 'Recipe not found' });
@@ -189,7 +199,7 @@ app.get('/cleaning', authenticateToken, async (req, res) => {
   }
 });
 
-app.delete('/cleaning/:id', authenticateToken, async (req, res) => {
+app.delete('/cleaning/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const deleted = await CleaningTask.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).json({ message: 'Cleaning task not found' });
