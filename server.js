@@ -87,6 +87,17 @@ app.post('/login', async (req, res) => {
   }
 });
 
+// 🔎 TEMP DEBUG ROUTE TO VIEW USERS
+app.get('/debug-users', async (req, res) => {
+  try {
+    const users = await User.find();
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: 'Error retrieving users', error: err.message });
+  }
+});
+
+
 // 📋 Recipe Routes
 app.post('/recipes', authenticateToken, async (req, res) => {
   try {
