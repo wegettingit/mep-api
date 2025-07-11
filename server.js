@@ -97,6 +97,23 @@ app.get('/debug-users', async (req, res) => {
   }
 });
 
+// 🧪 Temporary Register Route (for testing)
+app.post('/register', async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(409).json({ message: 'Username already exists' });
+    }
+
+    const newUser = new User({ username, password });
+    await newUser.save();
+
+    res.status(201).json({ message: 'User created successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error during registration' });
+  }
+});
 
 // 📋 Recipe Routes
 app.post('/recipes', authenticateToken, async (req, res) => {
