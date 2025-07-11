@@ -78,7 +78,8 @@ app.post('/register', async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const role = username === 'admin' ? 'admin' : 'user';
+    const adminUsernames = ['JohnE', 'admin'];
+    const role = adminUsernames.includes(username) ? 'admin' : 'user';
     const newUser = new User({ username, password: hashedPassword, role });
     await newUser.save();
 
