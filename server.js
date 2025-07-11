@@ -54,6 +54,30 @@ const CleaningTaskSchema = new mongoose.Schema({
 }, { timestamps: true });
 const CleaningTask = mongoose.model('CleaningTask', CleaningTaskSchema);
 
+app.post('/register', async (req, res) => {
+  const { username, password, accessKey } = req.body;
+
+  if (accessKey !== process.env.REGISTER_SECRET) {
+    return res.status(403).json({ message: 'Unauthorized registration' });
+  }
+
+  try {
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(409).json({ message: 'Username already exists' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({ username, password: hashedPassword });
+    await newUser.save();
+
+    res.status(201).json({ message: 'User created successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error during registration' });
+  }
+});
+
+
 // 🔐 Secure Login Route
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
