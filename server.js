@@ -61,6 +61,8 @@ const CleaningTaskSchema = new mongoose.Schema({
 }, { timestamps: true });
 const CleaningTask = mongoose.model('CleaningTask', CleaningTaskSchema);
 
+const User = require('./models/User');
+
 // 🔐 Secure Login Route
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
@@ -80,8 +82,6 @@ app.post('/login', async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: 'Server error during login' });
   }
-});
-
 });
 
 // 📋 Recipe Routes
