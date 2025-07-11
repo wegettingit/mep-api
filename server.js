@@ -62,14 +62,11 @@ const CleaningTaskSchema = new mongoose.Schema({
 const CleaningTask = mongoose.model('CleaningTask', CleaningTaskSchema);
 
 // 🔐 Secure Login Route
-app.post('/login', (req, res) => {
-const User = require('./models/User'); 
-
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   try {
-    const user = await User.findOne({ username, password });
-    if (!user) {
+    const user = await User.findOne({ username });
+    if (!user || user.password !== password) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
@@ -78,6 +75,7 @@ app.post('/login', async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
+
     res.json({ token });
   } catch (err) {
     res.status(500).json({ message: 'Server error during login' });
