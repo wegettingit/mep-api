@@ -77,11 +77,10 @@ app.post('/register', async (req, res) => {
       return res.status(409).json({ message: 'Username already exists' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const adminUsernames = ['JohnE', 'admin'];
-    const role = adminUsernames.includes(username) ? 'admin' : 'user';
-    const newUser = new User({ username, password: hashedPassword, role });
-    await newUser.save();
+ const adminUsernames = ['JohnE', 'admin'];
+ const role = adminUsernames.includes(username) ? 'admin' : 'user';
+ const newUser = new User({ username, password, role });
+ await newUser.save();
 
     res.status(201).json({ message: 'User created successfully' });
   } catch (err) {
