@@ -48,10 +48,12 @@ const RecipeSchema = new mongoose.Schema({
 const Recipe = mongoose.model('Recipe', RecipeSchema);
 
 const WhiteboardSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   todayPrep: String,
   tomorrowPrep: String
 }, { timestamps: true });
-const Whiteboard = mongoose.model('Whiteboard', WhiteboardSchema);
+
+module.exports = mongoose.model('Whiteboard', WhiteboardSchema);
 
 const CleaningTaskSchema = new mongoose.Schema({
   title: String,
@@ -61,12 +63,25 @@ const CleaningTask = mongoose.model('CleaningTask', CleaningTaskSchema);
 
 // 🔐 Secure Login Route
 app.post('/login', (req, res) => {
+const User = require('./models/User'); 
+
+app.post('/login', async (req, res) => {
   const { username, password } = req.body;
-  if (username !== process.env.ADMIN_USERNAME || password !== process.env.ADMIN_PASSWORD) {
-    return res.status(401).json({ message: 'Invalid credentials' });
+
+  try {
+    const user = await User.findOne({ username });
+    if (!user || user.password !== password) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    const token = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    res.json({ token });
+  } catch (err) {
+    console.error('❌ Error during login:', err);
+    res.status(500).json({ message: 'Server error during login', error: err.message });
   }
-  const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '7d' });
-  res.json({ token });
+});
+
 });
 
 // 📋 Recipe Routes
