@@ -5,10 +5,11 @@ const bcrypt = require('bcrypt');
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  role: { type: String, default: 'user' }
+  role: { type: String, enum: ['user', 'admin'], default: 'user' }, // Enforced enum
+  station: { type: String } // Added from screenshots/context
 });
 
-// 🧂 Hash before saving
+// Hash before saving (already good, but confirmed)
 UserSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   try {
