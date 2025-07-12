@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { authenticateToken, requireAdmin } = require('./auth'); // Updated path if needed
+const { authenticateToken, requireAdmin } = require('./auth'); // Assuming auth.js is in root
 const User = require('./models/User');
 const Recipe = require('./models/Recipe');
 const Whiteboard = require('./models/Whiteboard');
@@ -25,7 +25,7 @@ mongoose.connect(process.env.MONGO_URI, {
 }).then(() => console.log('🧠 Connected to MongoDB Atlas'))
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// Register Route (Secure with accessKey, auto-role)
+// Register Route
 app.post('/register', async (req, res) => {
   const { username, password, accessKey, station } = req.body;
 
@@ -61,7 +61,7 @@ app.post('/login', async (req, res) => {
     const token = jwt.sign(
       { id: user._id, username: user.username, role: user.role, station: user.station },
       process.env.JWT_SECRET,
-      { expiresIn: '1h' } // Shorter for security
+      { expiresIn: '1h' }
     );
 
     res.json({ token, station: user.station });
@@ -70,7 +70,7 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Recipe Routes (Users can add/read their own, admins delete all)
+// Recipe Routes
 app.post('/recipes', authenticateToken, async (req, res) => {
   try {
     const { name, steps, station } = req.body;
@@ -86,7 +86,7 @@ app.post('/recipes', authenticateToken, async (req, res) => {
 
 app.get('/recipes', authenticateToken, async (req, res) => {
   try {
-    const recipes = await Recipe.find({ userId: req.user.id }); // Per-user
+    const recipes = await Recipe.find({ userId: req.user.id });
     res.json(recipes);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching recipes', error: err.message });
@@ -95,7 +95,7 @@ app.get('/recipes', authenticateToken, async (req, res) => {
 
 app.delete('/recipes/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
-    const deleted = await Recipe.findByIdAndDelete(req.params.id); // Admins delete any
+    const deleted = await Recipe.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).json({ message: 'Recipe not found' });
     res.json({ message: 'Recipe deleted' });
   } catch (err) {
@@ -103,7 +103,7 @@ app.delete('/recipes/:id', authenticateToken, requireAdmin, async (req, res) => 
   }
 });
 
-// Whiteboard Routes (Per-user)
+// Whiteboard Routes
 app.get('/whiteboard', authenticateToken, async (req, res) => {
   try {
     const whiteboard = await Whiteboard.findOne({ userId: req.user.id });
@@ -131,7 +131,7 @@ app.post('/whiteboard', authenticateToken, async (req, res) => {
   }
 });
 
-// Cleaning Task Routes (Per-user add/read, admins delete)
+// Cleaning Task Routes
 app.post('/cleaning', authenticateToken, async (req, res) => {
   try {
     const { task, assignedTo } = req.body;
