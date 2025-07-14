@@ -21,8 +21,4 @@ function requireAdmin(req, res, next) {
 }
 
 
-<<<<<<< HEAD:auth.js
 module.exports = { authenticateToken, requireAdmin };
-=======
-module.exports = { authenticateToken, requireAdmin };
->>>>>>> 27156dc (middleare folder):middleware/auth.js
