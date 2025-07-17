@@ -74,6 +74,8 @@ app.post('/login', async (req, res) => {
 // Recipe Routes
 app.post('/recipes', authenticateToken, async (req, res) => {
   try {
+    console.log('JohnE:', req.user.id);
+
     const { name, steps, station } = req.body;
     if (!name || !steps || !station) return res.status(400).json({ message: 'Missing fields' });
 
@@ -87,22 +89,31 @@ app.post('/recipes', authenticateToken, async (req, res) => {
 
 app.get('/recipes', authenticateToken, async (req, res) => {
   try {
-    const recipes = await Recipe.find({ userId: req.user.id });
+    const recipes = await Recipe.find(); // Shows ALL recipes
     res.json(recipes);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching recipes', error: err.message });
   }
 });
 
-app.delete('/recipes/:id', authenticateToken, requireAdmin, async (req, res) => {
+
+app.delete('/recipes/:id', authenticateToken, async (req, res) => {
+  const ADMIN_ID = 'JohnE';
+
   try {
+    if (req.user.id !== ADMIN_ID) {
+      return res.status(403).json({ message: 'Only the admin can delete recipes' });
+    }
+
     const deleted = await Recipe.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).json({ message: 'Recipe not found' });
+
     res.json({ message: 'Recipe deleted' });
   } catch (err) {
     res.status(500).json({ message: 'Error deleting recipe', error: err.message });
   }
 });
+
 
 // Whiteboard Routes
 app.get('/whiteboard', authenticateToken, async (req, res) => {
