@@ -168,11 +168,12 @@ app.delete('/cleaning/:id', authenticateToken, requireAdmin, async (req, res) =>
 // 🧪 TEMPORARY TEST USER SEEDER ROUTE
 app.get('/seed-test-users', async (req, res) => {
   try {
-    const testUsers = [
-      { username: 'testcook1', password: 'shifthammer', role: 'cook' },
-      { username: 'testchef1', password: 'claritypls', role: 'chef' },
-      { username: 'testerkev', password: 'mephelper22', role: 'admin' }
-    ];
+ const testUsers = [
+  { username: 'testcook1', password: 'shifthammer', role: 'user' },
+  { username: 'testchef1', password: 'claritypls', role: 'user' },
+  { username: 'testerkev', password: 'mephelper22', role: 'admin' }
+];
+
 
     for (const user of testUsers) {
       const exists = await User.findOne({ username: user.username });
