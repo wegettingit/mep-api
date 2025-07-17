@@ -10,6 +10,7 @@ const User = require('./models/User');
 const Recipe = require('./models/Recipe');
 const Whiteboard = require('./models/Whiteboard');
 const CleaningTask = require('./models/CleaningTask');
+const AccessRequest = require('./models/AccessRequest');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -151,6 +152,23 @@ app.get('/cleaning', authenticateToken, async (req, res) => {
     res.json(tasks);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching tasks', error: err.message });
+  }
+});
+
+app.post('/request-access', async (req, res) => {
+  try {
+    const { name, email, message } = req.body;
+
+    if (!name || !email || !message) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    const newRequest = new AccessRequest({ name, email, message });
+    await newRequest.save();
+
+    res.json({ message: 'Access request received. We’ll be in touch soon.' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error saving request', error: err.message });
   }
 });
 
