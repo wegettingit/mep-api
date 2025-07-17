@@ -73,8 +73,10 @@ app.post('/login', async (req, res) => {
 
 // Recipe Routes
 app.post('/recipes', authenticateToken, async (req, res) => {
+  console.log('🚨 POST /recipes hit');
+
   try {
-    console.log('JohnE:', req.user.id);
+    console.log('JohnE:', req.user.id); // Force log inside try block
 
     const { name, steps, station } = req.body;
     if (!name || !steps || !station) return res.status(400).json({ message: 'Missing fields' });
@@ -86,6 +88,7 @@ app.post('/recipes', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Error saving recipe', error: err.message });
   }
 });
+
 
 app.get('/recipes', authenticateToken, async (req, res) => {
   try {
