@@ -164,5 +164,23 @@ app.delete('/cleaning/:id', authenticateToken, requireAdmin, async (req, res) =>
   }
 });
 
-// Start server
+//  Random Chef Quote
+app.get('/quote', (req, res) => {
+  const quotes = [
+    "Keep your station tight, your mind tighter. – Anonymous Chef",
+    "You don’t rise to the occasion. You fall to your level of preparation. – Archilochus (and every chef ever)",
+    "Sharp knife, clear mind.",
+    "Mise en place is a way of life, not a checklist.",
+    "Clean as you go or cry when you don't.",
+    "Burned once, learn twice.",
+    "Calm is contagious. So is chaos.",
+    "We prep in peace so we don’t bleed in service.",
+    "The board is your battlefield. Don’t show up unarmed.",
+    "Sweat in prep so you don’t bleed on the line."
+  ];
+
+  const random = quotes[Math.floor(Math.random() * quotes.length)];
+  res.json({ quote: random });
+});
+
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
