@@ -89,7 +89,7 @@ app.post('/recipes', authenticateToken, async (req, res) => {
 
 app.get('/recipes', authenticateToken, async (req, res) => {
   try {
-    const recipes = await Recipe.find(); // Shows ALL recipes
+    const recipes = await Recipe.find(); 
     res.json(recipes);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching recipes', error: err.message });
