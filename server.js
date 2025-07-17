@@ -165,4 +165,30 @@ app.delete('/cleaning/:id', authenticateToken, requireAdmin, async (req, res) =>
 });
 
 // Start server
+// 🧪 TEMPORARY TEST USER SEEDER ROUTE
+app.get('/seed-test-users', async (req, res) => {
+  try {
+    const testUsers = [
+      { username: 'testcook1', password: 'shifthammer', role: 'cook' },
+      { username: 'testchef1', password: 'claritypls', role: 'chef' },
+      { username: 'testerkev', password: 'mephelper22', role: 'admin' }
+    ];
+
+    for (const user of testUsers) {
+      const exists = await User.findOne({ username: user.username });
+      if (!exists) {
+        const hashed = await bcrypt.hash(user.password, 10);
+        await User.create({ username: user.username, password: hashed, role: user.role });
+        console.log(`✅ Created ${user.username}`);
+      } else {
+        console.log(`⚠️ Already exists: ${user.username}`);
+      }
+    }
+
+    res.send('✅ Test users seeded successfully.');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('❌ Error seeding test users.');
+  }
+});
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
