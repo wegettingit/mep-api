@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  role: { type: String, enum: ['user', 'admin'], default: 'user' }, // Enforced enum
+  role: { type: String, enum: ['user', 'admin', 'cook', 'chef'], default: 'user' }, // Enforced enum
   station: { type: String } // Added from screenshots/context
 });
 
