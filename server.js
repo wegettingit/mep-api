@@ -165,31 +165,4 @@ app.delete('/cleaning/:id', authenticateToken, requireAdmin, async (req, res) =>
 });
 
 // Start server
-// 🧪 TEMPORARY TEST USER SEEDER ROUTE
-app.get('/seed-test-users', async (req, res) => {
-  try {
-    const testUsers = [
-      { username: 'testcook1', password: 'shifthammer', role: 'user', station: 'demo' },
-      { username: 'testchef1', password: 'claritypls', role: 'user', station: 'demo' },
-      { username: 'testerkev', password: 'mephelper22', role: 'admin', station: 'demo' }
-    ];
-
-    for (const user of testUsers) {
-      const exists = await User.findOne({ username: user.username });
-      if (!exists) {
-        const u = new User(user); // let pre-save hook hash password
-        await u.save();
-        console.log(`✅ Created ${user.username}`);
-      } else {
-        console.log(`⚠️ Already exists: ${user.username}`);
-      }
-    }
-
-    res.send('✅ Test users seeded successfully.');
-  } catch (err) {
-    console.error('❌ Seeder error:', err);
-    res.status(500).send('❌ Error seeding test users.');
-  }
-});
-
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
