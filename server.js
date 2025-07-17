@@ -100,9 +100,9 @@ app.get('/recipes', authenticateToken, async (req, res) => {
 });
 
 
-app.delete('/recipes/:id', authenticateToken, async (req, res) => {
-  const ADMIN_ID = 'JohnE';
+const ADMIN_ID = '68719b3f34c0258c615f76d6'; // Only JohnE can delete
 
+app.delete('/recipes/:id', authenticateToken, async (req, res) => {
   try {
     if (req.user.id !== ADMIN_ID) {
       return res.status(403).json({ message: 'Only the admin can delete recipes' });
