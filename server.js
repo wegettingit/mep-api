@@ -215,4 +215,27 @@ app.get('/quote', (req, res) => {
   res.json({ quote: random });
 });
 
+app.get('/ai-quote', async (req, res) => {
+  try {
+    const chatCompletion = await openai.chat.completions.create({
+      model: 'gpt-4',
+      messages: [
+        {
+          role: 'user',
+          content: "Give me a short, motivational quote about cooking or being a chef. It should sound real, like something a working cook would say.",
+        },
+      ],
+      max_tokens: 60,
+    });
+
+    const aiQuote = chatCompletion.choices[0].message.content.trim();
+    res.json({ quote: aiQuote });
+
+  } catch (error) {
+    console.error('❌ OpenAI Error:', error.message);
+    res.status(500).json({ error: 'Failed to fetch AI quote.' });
+  }
+});
+
+
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
