@@ -1,5 +1,5 @@
 // server.js
-require('dotenv').config({ path: '/etc/secrets/.env' });
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -11,6 +11,13 @@ const Recipe = require('./models/Recipe');
 const Whiteboard = require('./models/Whiteboard');
 const CleaningTask = require('./models/CleaningTask');
 const AccessRequest = require('./models/AccessRequest');
+
+const OpenAI = require('openai');
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
