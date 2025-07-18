@@ -237,5 +237,23 @@ app.get('/ai-quote', async (req, res) => {
   }
 });
 
+app.get('/test-openai', async (req, res) => {
+  try {
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4',
+      messages: [
+        {
+          role: 'user',
+          content: 'Respond with the word PREPPED if this works.',
+        },
+      ],
+    });
+
+    res.json({ result: response.choices[0].message.content.trim() });
+  } catch (err) {
+    console.error('❌ OpenAI Test Error:', err.message);
+    res.status(500).json({ error: 'Failed to connect to OpenAI.' });
+  }
+});
 
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
