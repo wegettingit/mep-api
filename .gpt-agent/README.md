@@ -47,6 +47,9 @@ server.js             # Express app entry point
 - Validate all models have correct defaults, timestamps
 - Add error handling to all route responses
 - Propose schema improvements if any inefficiencies exist
+- 🧠 Add Smart Prep Routine Learning
+
+This new feature allows MEP to suggest common prep items for a given day based on past saves, simulating a sous chef’s memory.
 
 ## 🤖 What the Human Will Handle:
 - Testing in Render, Notion table updates
